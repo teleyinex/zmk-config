@@ -17,11 +17,55 @@
 #define BT    4
 
 /*
- * Hyper = LGUI + LCTL + LALT + LSFT.
- * Must be wrapped in () everywhere it appears inside a <bindings> list
- * so the DTS parser sees it as a single parenthesized expression.
+ * All keycodes used as hold-tap arguments must be plain integer expressions.
+ * The DTS parser does not accept macro expansions that contain operators
+ * (|, <<, etc.) as bare arguments to multi-cell bindings — they need to be
+ * wrapped so the C preprocessor reduces them before DTS sees them.
+ * Wrapping every ES_ keycode and HYPER in () here achieves that.
  */
-#define HYPER (LS(LA(LC(LGUI))))
+#define HYPER   (LS(LA(LC(LGUI))))
+#define _NTIL   (ES_NTIL)
+#define _ACUT   (ES_ACUT)
+#define _DIAE   (ES_DIAE)
+#define _COMM   (ES_COMM)
+#define _DOT    (ES_DOT)
+#define _ASTR   (ES_ASTR)
+#define _MINS   (ES_MINS)
+#define _SLSH   (ES_SLSH)
+#define _PLUS   (ES_PLUS)
+#define _SQT    (ES_SQT)
+#define _N0     (ES_N0)
+#define _N1     (ES_N1)
+#define _N2     (ES_N2)
+#define _N3     (ES_N3)
+#define _N4     (ES_N4)
+#define _N5     (ES_N5)
+#define _N6     (ES_N6)
+#define _N7     (ES_N7)
+#define _N8     (ES_N8)
+#define _N9     (ES_N9)
+#define _AMPR   (ES_AMPR)
+#define _EXLM   (ES_EXLM)
+#define _AT     (ES_AT)
+#define _HASH   (ES_HASH)
+#define _DLR    (ES_DLR)
+#define _PERC   (ES_PERC)
+#define _PIPE   (ES_PIPE)
+#define _LBRC   (ES_LBRC)
+#define _RBRC   (ES_RBRC)
+#define _LPAR   (ES_LPAR)
+#define _RPAR   (ES_RPAR)
+#define _EQUAL  (ES_EQUAL)
+#define _DQT    (ES_DQT)
+#define _BSLH   (ES_BSLH)
+#define _LBKT   (ES_LBKT)
+#define _RBKT   (ES_RBKT)
+#define _LT     (ES_LT)
+#define _GT     (ES_GT)
+#define _QMARK  (ES_QMARK)
+#define _IEXL   (ES_IEXL)
+#define _IQUE   (ES_IQUE)
+#define _GRV    (ES_GRV)
 
 / {
 
@@ -78,7 +122,7 @@
             bindings = <&mo>, <&kp>;
         };
 
-        /* LT for SYM / enter — hold-preferred, no quick-tap repeat */
+        /* LT for SYM / enter */
         lt_sym: lt_sym {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
@@ -92,7 +136,6 @@
     combos {
         compatible = "zmk,combos";
 
-        /* Both outer thumb keys → Caps Word */
         combo_caps_word {
             timeout-ms = <50>;
             key-positions = <36 41>;
@@ -107,17 +150,17 @@
         base_layer {
             display-name = "BASE";
             bindings = <
-                &kp ESC          &kp Q         &kp W         &kp E         &kp R         &kp T
-                &kp Y            &kp U         &kp I         &kp O         &kp P         &kp BSPC
+                &kp ESC        &kp Q          &kp W        &kp E        &kp R        &kp T
+                &kp Y          &kp U          &kp I        &kp O        &kp P        &kp BSPC
 
-                &kp HYPER        &hm_s LSFT A  &hm LALT S    &hm LCTL D    &hm LGUI F    &kp G
-                &kp H            &hm RGUI J    &hm RCTL K    &hm RALT L    &hm_s RSFT (ES_NTIL)  &kp (ES_ACUT)
+                &kp HYPER      &hm_s LSFT A   &hm LALT S   &hm LCTL D   &hm LGUI F   &kp G
+                &kp H          &hm RGUI J     &hm RCTL K   &hm RALT L   &hm_s RSFT _NTIL   &kp _ACUT
 
-                &none            &kp Z         &kp X         &kp C         &kp V         &kp B
-                &kp N            &kp M         &kp (ES_COMM) &kp (ES_DOT)  &kp SLASH     &kp RSFT
+                &none          &kp Z          &kp X        &kp C        &kp V        &kp B
+                &kp N          &kp M          &kp _COMM    &kp _DOT     &kp SLASH    &kp RSFT
 
-                &tog BT          &mo NUM       &lt_nav NAV SPC
-                &kp SPC          &lt_sym SYM RET  &kp HYPER
+                &tog BT        &mo NUM        &lt_nav NAV SPC
+                &kp SPC        &lt_sym SYM RET   &kp HYPER
             >;
         };
 
@@ -125,17 +168,17 @@
         nav_layer {
             display-name = "NAV";
             bindings = <
-                &kp TAB   &none      &fwd_word  &none   &none   &none
-                &kp F1    &kp F2     &kp F3     &kp F4  &kp F5  &kp BSPC
+                &kp TAB    &none       &fwd_word   &none       &none      &none
+                &kp F1     &kp F2      &kp F3      &kp F4      &kp F5     &kp BSPC
 
-                &none     &none      &none      &none   &none   &none
-                &kp LEFT  &kp DOWN   &kp UP     &kp RIGHT  &none  &kp (ES_DIAE)
+                &none      &none       &none       &none       &none      &none
+                &kp LEFT   &kp DOWN    &kp UP      &kp RIGHT   &none      &kp _DIAE
 
-                &none     &none      &kp DEL    &none   &none   &back_word
-                &kp HOME  &kp PG_DN  &kp PG_UP  &kp END  &none  &none
+                &none      &none       &kp DEL     &none       &none      &back_word
+                &kp HOME   &kp PG_DN   &kp PG_UP   &kp END     &none      &none
 
-                &trans    &trans     &trans
-                &trans    &trans     &trans
+                &trans     &trans      &trans
+                &trans     &trans      &trans
             >;
         };
 
@@ -143,17 +186,17 @@
         num_layer {
             display-name = "NUM";
             bindings = <
-                &none  &none  &none  &none  &none  &none
-                &kp (ES_ASTR)  &kp (ES_N7)  &kp (ES_N8)  &kp (ES_N9)  &kp (ES_MINS)  &kp BSPC
+                &none      &none    &none    &none    &none    &none
+                &kp _ASTR  &kp _N7  &kp _N8  &kp _N9  &kp _MINS  &kp BSPC
 
-                &none  &none  &none  &none  &none  &none
-                &kp (ES_SLSH)  &kp (ES_N4)  &kp (ES_N5)  &kp (ES_N6)  &kp (ES_PLUS)  &kp (ES_SQT)
+                &none      &none    &none    &none    &none    &none
+                &kp _SLSH  &kp _N4  &kp _N5  &kp _N6  &kp _PLUS  &kp _SQT
 
-                &none  &none  &none  &none  &none  &none
-                &kp (ES_N0)  &kp (ES_N1)  &kp (ES_N2)  &kp (ES_N3)  &kp (ES_DOT)  &kp RSFT
+                &none      &none    &none    &none    &none    &none
+                &kp _N0    &kp _N1  &kp _N2  &kp _N3  &kp _DOT   &kp RSFT
 
-                &trans  &trans  &trans
-                &kp SPC  &trans  &trans
+                &trans     &trans   &trans
+                &kp SPC    &trans   &trans
             >;
         };
 
@@ -161,17 +204,17 @@
         sym_layer {
             display-name = "SYM";
             bindings = <
-                &kp (ES_AMPR)  &kp (ES_EXLM)  &kp (ES_AT)   &kp (ES_HASH)  &kp (ES_DLR)   &kp (ES_PERC)
-                &none          &kp (ES_IEXL)  &none          &none          &none          &kp BSPC
+                &kp _AMPR   &kp _EXLM  &kp _AT    &kp _HASH  &kp _DLR   &kp _PERC
+                &none       &kp _IEXL  &none      &none      &none      &kp BSPC
 
-                &kp (ES_PIPE)  &kp (ES_LBRC)  &kp (ES_RBRC) &kp (ES_LPAR)  &kp (ES_RPAR)  &kp (ES_EQUAL)
-                &kp C_PP       &kp (ES_DQT)   &kp C_VOL_DN   &kp C_VOL_UP   &none          &none
+                &kp _PIPE   &kp _LBRC  &kp _RBRC  &kp _LPAR  &kp _RPAR  &kp _EQUAL
+                &kp C_PP    &kp _DQT   &kp C_VOL_DN  &kp C_VOL_UP  &none  &none
 
-                &kp (ES_BSLH)  &kp (ES_LBKT)  &kp (ES_RBKT) &kp (ES_LT)    &kp (ES_GT)    &kp (ES_QMARK)
-                &none          &kp (ES_IQUE)  &none          &none          &none          &none
+                &kp _BSLH   &kp _LBKT  &kp _RBKT  &kp _LT    &kp _GT    &kp _QMARK
+                &none       &kp _IQUE  &none      &none      &none      &none
 
-                &trans  &trans  &trans
-                &kp SPC  &trans  &trans
+                &trans      &trans     &trans
+                &kp SPC     &trans     &trans
             >;
         };
 
@@ -182,8 +225,8 @@
                 &to BASE  &none  &none  &none  &none  &none
                 &none     &none  &none  &none  &none  &none
 
-                &none  &none  &none  &none  &none  &none
-                &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none
+                &none          &none          &none          &none          &none  &none
+                &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4   &none
 
                 &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &bt BT_CLR  &none
