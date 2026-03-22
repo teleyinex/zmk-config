@@ -1,0 +1,227 @@
+/*
+ * Corne ZMK keymap — translated from QMK
+ * Hardware: nice!nano v2 + standard Corne PCB
+ *
+ * Dependencies: zmk-locales module (see west.yml)
+ *
+ * Layers:
+ *   0 BASE
+ *   1 NAV
+ *   2 NUM
+ *   3 SYM
+ *   4 BT  (replaces MOUSE layer — bluetooth profiles)
+ *
+ * Translation notes:
+ *   - Home row mods: two hold-tap behaviors, one for shifts (170ms,
+ *     tap-unless-interrupted) and one for the rest (180ms).
+ *   - LT(1,SPC) → lt_nav: tap-unless-interrupted, quick-tap 120ms.
+ *   - LT(3,ENT) → lt_sym: hold-preferred, quick-tap 0ms (matches
+ *     get_hold_on_other_key_press + get_quick_tap_term overrides in QMK).
+ *   - BACK_WORD/FORWARD_WORD fixed to macOS (Alt+Left / Alt+Right).
+ *   - VIM_VIS_TOG has no ZMK equivalent without a custom C module;
+ *     the key position is &none. See zmk-tri-state if needed later.
+ *   - KC_HYPR → LS(LA(LC(LGUI))).
+ *   - BOTH_SHIFTS_TURNS_ON_CAPS_WORD → combo on both outer thumb keys.
+ *
+ * ES_ keycode name differences vs QMK keymap_spanish.h:
+ *   QMK ES_LCBR / ES_RCBR → ZMK ES_LBRC / ES_RBRC  ({ })
+ *   QMK ES_LPRN / ES_RPRN → ZMK ES_LPAR / ES_RPAR  (( ))
+ *   QMK ES_LABK / ES_RABK → ZMK ES_LT   / ES_GT    (< >)
+ *   QMK ES_DQUO            → ZMK ES_DQT             (")
+ *   QMK ES_QUOT            → ZMK ES_SQT             (')
+ *   Numbers: QMK ES_1..ES_0 → ZMK ES_N1..ES_N0
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <locale/keys_es.h>
+
+/* ── Layer indices ─────────────────────────────────────────────────────────── */
+#define BASE  0
+#define NAV   1
+#define NUM   2
+#define SYM   3
+#define BT    4
+
+/* ── Hyper shorthand ───────────────────────────────────────────────────────── */
+#define HYPER LS(LA(LC(LGUI)))
+
+/ {
+
+    /* ── Macros ──────────────────────────────────────────────────────────── */
+    macros {
+        /* Word-back: Alt+Left (macOS) */
+        back_word: back_word {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press   &kp LALT>
+                , <&macro_tap     &kp LEFT>
+                , <&macro_release &kp LALT>
+                ;
+        };
+
+        /* Word-forward: Alt+Right (macOS) */
+        fwd_word: fwd_word {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press   &kp LALT>
+                , <&macro_tap     &kp RIGHT>
+                , <&macro_release &kp LALT>
+                ;
+        };
+    };
+
+    /* ── Behaviors ───────────────────────────────────────────────────────── */
+    behaviors {
+        /*
+         * Shift home-row mods (A and Ñ): 170ms, time-only trigger.
+         * tap-unless-interrupted = only timeout triggers hold, never overlap.
+         */
+        hm_s: hm_shift {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-unless-interrupted";
+            tapping-term-ms = <170>;
+            quick-tap-ms = <120>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        /* All other home-row mods: 180ms */
+        hm: hm {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-unless-interrupted";
+            tapping-term-ms = <180>;
+            quick-tap-ms = <120>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        /* Layer-tap for NAV (left thumb space). quick-tap enables repeat. */
+        lt_nav: lt_nav {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-unless-interrupted";
+            tapping-term-ms = <180>;
+            quick-tap-ms = <120>;
+            bindings = <&mo>, <&kp>;
+        };
+
+        /*
+         * Layer-tap for SYM (right thumb enter).
+         * hold-preferred: any simultaneous key triggers hold immediately.
+         * quick-tap 0: no repeat on double-tap.
+         */
+        lt_sym: lt_sym {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <180>;
+            quick-tap-ms = <0>;
+            bindings = <&mo>, <&kp>;
+        };
+    };
+
+    /* ── Combos ──────────────────────────────────────────────────────────── */
+    combos {
+        compatible = "zmk,combos";
+
+        /*
+         * Both outer thumb keys simultaneously → Caps Word.
+         * Positions 36 (left outer thumb) and 41 (right outer thumb)
+         * on a standard 3×6+3 Corne. Adjust if your matrix differs.
+         */
+        combo_caps_word {
+            timeout-ms = <50>;
+            key-positions = <36 41>;
+            bindings = <&caps_word>;
+        };
+    };
+
+    /* ── Keymap ──────────────────────────────────────────────────────────── */
+    keymap {
+        compatible = "zmk,keymap";
+
+        /* ── 0: BASE ───────────────────────────────────────────────────── */
+        base_layer {
+            display-name = "BASE";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
+            &kp ESC    &kp Q      &kp W      &kp E      &kp R      &kp T              &kp Y      &kp U      &kp I      &kp O      &kp P      &kp BSPC
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+          &kp HYPER &hm_s LSFT A &hm LALT S &hm LCTL D &hm LGUI F  &kp G          &kp H   &hm RGUI J  &hm RCTL K  &hm RALT L  &hm_s RSFT ES_NTIL  &kp ES_ACUT
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &kp Z      &kp X      &kp C      &kp V      &kp B              &kp N      &kp M    &kp ES_COMM  &kp ES_DOT  &kp SLASH  &kp RSFT
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
+                                           &tog BT    &mo NUM   &lt_nav NAV SPC    &kp SPC  &lt_sym SYM RET  &kp HYPER
+        //                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+            >;
+        };
+
+        /* ── 1: NAV ────────────────────────────────────────────────────── */
+        nav_layer {
+            display-name = "NAV";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
+            &kp TAB    &none     &fwd_word   &none      &none      &none              &kp F1     &kp F2     &kp F3     &kp F4     &kp F5     &kp BSPC
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &none      &none      &none      &none      &none              &kp LEFT   &kp DOWN   &kp UP    &kp RIGHT   &none     &kp ES_DIAE
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &none     &kp DEL     &none      &none     &back_word         &kp HOME  &kp PG_DN  &kp PG_UP   &kp END    &none      &none
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &trans     &trans     &trans             &trans     &trans     &trans
+        //                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+            >;
+        };
+
+        /* ── 2: NUM ────────────────────────────────────────────────────── */
+        num_layer {
+            display-name = "NUM";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
+            &none      &none      &none      &none      &none      &none           &kp ES_ASTR  &kp ES_N7  &kp ES_N8  &kp ES_N9  &kp ES_MINS  &kp BSPC
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &none      &none      &none      &none      &none           &kp ES_SLSH  &kp ES_N4  &kp ES_N5  &kp ES_N6  &kp ES_PLUS  &kp ES_SQT
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &none      &none      &none      &none      &none            &kp ES_N0  &kp ES_N1  &kp ES_N2  &kp ES_N3  &kp ES_DOT   &kp RSFT
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &trans     &trans     &trans            &kp SPC    &trans     &trans
+        //                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+            >;
+        };
+
+        /* ── 3: SYM ────────────────────────────────────────────────────── */
+        sym_layer {
+            display-name = "SYM";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
+          &kp ES_AMPR &kp ES_EXLM &kp ES_AT &kp ES_HASH &kp ES_DLR &kp ES_PERC    &none    &kp ES_IEXL  &none      &none      &none     &kp BSPC
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+          &kp ES_PIPE &kp ES_LBRC &kp ES_RBRC &kp ES_LPAR &kp ES_RPAR &kp ES_EQUAL  &kp C_PP &kp ES_DQT &kp C_VOL_DN &kp C_VOL_UP &none  &none
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+          &kp ES_BSLH &kp ES_LBKT &kp ES_RBKT &kp ES_LT  &kp ES_GT &kp ES_QMARK   &none   &kp ES_IQUE   &none      &none      &none      &none
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &trans     &trans     &trans            &kp SPC    &trans     &trans
+        //                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+            >;
+        };
+
+        /* ── 4: BT ─────────────────────────────────────────────────────── */
+        bt_layer {
+            display-name = "BT";
+            bindings = <
+        //╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮   ╭──────────┬──────────┬──────────┬──────────┬──────────┬──────────╮
+            &to BASE   &none      &none      &none      &none      &none              &none      &none      &none      &none      &none      &none
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &none      &none      &none      &none      &none          &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4  &none
+        //├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+            &none      &none      &none      &none      &none      &none              &none      &none      &none      &none    &bt BT_CLR   &none
+        //╰──────────┴──────────┴──────────┼──────────┼──────────┼──────────┤   ├──────────┼──────────┼──────────┼──────────┴──────────┴──────────╯
+                                             &trans     &trans     &trans             &trans     &trans     &trans
+        //                                 ╰──────────┴──────────┴──────────╯   ╰──────────┴──────────┴──────────╯
+            >;
+        };
+    };
+};
