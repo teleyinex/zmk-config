@@ -123,20 +123,19 @@
 
     behaviors {
         /*
-         * Shift HRM (A, Ñ): balanced flavor, 200ms.
-         * balanced = hold triggers if another key is pressed AND released
-         * within the tapping-term. Better than tap-unless-interrupted for
-         * typing rolls without false modifier triggers.
-         * require-prior-idle-ms: if a key was tapped <150ms ago, always tap.
-         * This prevents false holds during fast typing.
+         * Shift HRM (A, Ñ): tap-unless-interrupted, 200ms.
+         * Hold activates only on timeout OR if another key is pressed but
+         * NOT released before tapping-term — so fast shift+letter works as
+         * long as you release the letter before the term expires.
+         * require-prior-idle-ms prevents false shift during fast typing rolls.
          */
         hm_s: hm_shift {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <200>;
+            flavor = "tap-unless-interrupted";
+            tapping-term-ms = <220>;
             quick-tap-ms = <150>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <125>;
             bindings = <&kp>, <&kp>;
         };
 
@@ -202,7 +201,7 @@
                 &none            &kp Z         &kp X        &kp C        &kp V        &kp B
                 &kp N            &kp M         &kp COMMA    &kp DOT      &kp FSLH     &kp RSFT
 
-                &tog BT          &mo NUM       &lt_nav NAV SPC
+                &mo BT           &mo NUM       &lt_nav NAV SPC
                 &kp SPC          &lt_sym SYM RET   &kp HYPER
             >;
         };
@@ -265,11 +264,11 @@
         bt_layer {
             display-name = "BT";
             bindings = <
-                &to BASE  &none  &none  &none  &none  &none
-                &none     &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none
 
-                &none          &none          &none          &none          &none  &none
-                &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4   &none
+                &none          &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4
+                &none          &none          &none          &none          &none          &none
 
                 &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &bt BT_CLR  &none
