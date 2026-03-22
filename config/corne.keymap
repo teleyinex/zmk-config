@@ -2,12 +2,56 @@
  * Corne ZMK keymap — translated from QMK
  * Hardware: nice!nano v2 + standard Corne PCB
  * Dependencies: zmk-locales module (see west.yml)
+ *
+ * NOTE on ES_ keycodes in hold-tap bindings:
+ * The Zephyr DTS parser runs before the C preprocessor, so ES_ macros
+ * (which expand to ZMK_HID_USAGE(...) expressions) cannot be used as
+ * arguments to multi-cell behaviors like hold-tap.
+ * Solution: use the underlying ZMK base keycode directly.
+ *
+ * Spanish layout → US HID keycode mapping for affected keys:
+ *   Ñ  (ES_NTIL) = SEMI       (;  on US)
+ *   ´  (ES_ACUT) = SQT        ('  on US)  — dead acute
+ *   ¨  (ES_DIAE) = LS(SQT)    ("  on US)  — dead diaeresis
+ *   ,  (ES_COMM) = COMMA       (identical)
+ *   .  (ES_DOT)  = DOT         (identical)
+ *   -  (ES_MINS) = FSLH        (/  on US)
+ *   *  (ES_ASTR) = LS(RBKT)    (}  on US) -- via shift
+ *   /  (ES_SLSH) = LS(N7)
+ *   +  (ES_PLUS) = RBKT
+ *   '  (ES_SQT)  = MINUS
+ *   =  (ES_EQUAL)= LS(N0)
+ *   &  (ES_AMPR) = LS(N6)
+ *   !  (ES_EXLM) = LS(N1)
+ *   @  (ES_AT)   = RA(N2)
+ *   #  (ES_HASH) = LS(N3)  -- (on ES layout # is RA(N3) actually, but
+ *                              keymap_spanish.h maps HASH=LS(N3) for £/·)
+ *                              Use RA(N3) for # on Spanish ISO
+ *   $  (ES_DLR)  = LS(N4)
+ *   %  (ES_PERC) = LS(N5)
+ *   |  (ES_PIPE) = RA(N1)  -- (on ES: AltGr+1)
+ *   {  (ES_LBRC) = RA(SQT)
+ *   }  (ES_RBRC) = RA(BSLH)
+ *   (  (ES_LPAR) = LS(N8)
+ *   )  (ES_RPAR) = LS(N9)
+ *   [  (ES_LBKT) = RA(LBKT)
+ *   ]  (ES_RBKT) = RA(RBKT)
+ *   <  (ES_LT)   = NON_US_BSLH
+ *   >  (ES_GT)   = LS(NON_US_BSLH)
+ *   ?  (ES_QMARK)= LS(MINUS)
+ *   ¡  (ES_IEXL) = EQUAL
+ *   ¿  (ES_IQUE) = LS(EQUAL)
+ *   \  (ES_BSLH) = RA(MINUS)
+ *   `  (ES_GRV)  = LBKT        — dead grave
+ *   0-9: N0-N9 (identical)
+ *
+ * For &kp bindings the ES_ macros work fine — only hold-tap arguments
+ * need the raw codes. This keymap uses raw codes everywhere for consistency.
  */
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
-#include <locale/keys_es.h>
 
 /* ── Layer indices ─────────────────────────────────────────────────────────── */
 #define BASE  0
@@ -16,56 +60,42 @@
 #define SYM   3
 #define BT    4
 
-/*
- * All keycodes used as hold-tap arguments must be plain integer expressions.
- * The DTS parser does not accept macro expansions that contain operators
- * (|, <<, etc.) as bare arguments to multi-cell bindings — they need to be
- * wrapped so the C preprocessor reduces them before DTS sees them.
- * Wrapping every ES_ keycode and HYPER in () here achieves that.
- */
-#define HYPER   (LS(LA(LC(LGUI))))
-#define _NTIL   (ES_NTIL)
-#define _ACUT   (ES_ACUT)
-#define _DIAE   (ES_DIAE)
-#define _COMM   (ES_COMM)
-#define _DOT    (ES_DOT)
-#define _ASTR   (ES_ASTR)
-#define _MINS   (ES_MINS)
-#define _SLSH   (ES_SLSH)
-#define _PLUS   (ES_PLUS)
-#define _SQT    (ES_SQT)
-#define _N0     (ES_N0)
-#define _N1     (ES_N1)
-#define _N2     (ES_N2)
-#define _N3     (ES_N3)
-#define _N4     (ES_N4)
-#define _N5     (ES_N5)
-#define _N6     (ES_N6)
-#define _N7     (ES_N7)
-#define _N8     (ES_N8)
-#define _N9     (ES_N9)
-#define _AMPR   (ES_AMPR)
-#define _EXLM   (ES_EXLM)
-#define _AT     (ES_AT)
-#define _HASH   (ES_HASH)
-#define _DLR    (ES_DLR)
-#define _PERC   (ES_PERC)
-#define _PIPE   (ES_PIPE)
-#define _LBRC   (ES_LBRC)
-#define _RBRC   (ES_RBRC)
-#define _LPAR   (ES_LPAR)
-#define _RPAR   (ES_RPAR)
-#define _EQUAL  (ES_EQUAL)
-#define _DQT    (ES_DQT)
-#define _BSLH   (ES_BSLH)
-#define _LBKT   (ES_LBKT)
-#define _RBKT   (ES_RBKT)
-#define _LT     (ES_LT)
-#define _GT     (ES_GT)
-#define _QMARK  (ES_QMARK)
-#define _IEXL   (ES_IEXL)
-#define _IQUE   (ES_IQUE)
-#define _GRV    (ES_GRV)
+/* ── Hyper ─────────────────────────────────────────────────────────────────── */
+#define HYPER LS(LA(LC(LGUI)))
+
+/* ── Spanish layout raw keycodes ───────────────────────────────────────────── */
+/* Simple (unshifted) */
+#define ES_N    SEMI          /* Ñ */
+#define ES_ACU  SQT           /* ´ dead */
+#define ES_DIA  LS(SQT)       /* ¨ dead */
+#define ES_MNS  FSLH          /* - */
+#define ES_PLU  RBKT          /* + */
+#define ES_APO  MINUS         /* ' */
+#define ES_GRV  LBKT          /* ` dead */
+#define ES_IEX  EQUAL         /* ¡ */
+#define ES_IQU  LS(EQUAL)     /* ¿ */
+#define ES_LT   NON_US_BSLH   /* < */
+#define ES_GT   LS(NON_US_BSLH) /* > */
+#define ES_BSL  RA(MINUS)     /* \ */
+#define ES_LBR  RA(SQT)       /* { */
+#define ES_RBR  RA(BSLH)      /* } */
+#define ES_LBK  RA(LBKT)      /* [ */
+#define ES_RBK  RA(RBKT)      /* ] */
+#define ES_PIP  RA(N1)        /* | */
+#define ES_AT   RA(N2)        /* @ */
+#define ES_HSH  RA(N3)        /* # */
+/* Shifted */
+#define ES_EXL  LS(N1)        /* ! */
+#define ES_QOT  LS(N2)        /* " */
+#define ES_DLR  LS(N4)        /* $ */
+#define ES_PER  LS(N5)        /* % */
+#define ES_AMP  LS(N6)        /* & */
+#define ES_SLS  LS(N7)        /* / */
+#define ES_LPR  LS(N8)        /* ( */
+#define ES_RPR  LS(N9)        /* ) */
+#define ES_EQL  LS(N0)        /* = */
+#define ES_AST  LS(RBKT)      /* * */
+#define ES_QMK  LS(FSLH)      /* ? */
 
 / {
 
@@ -150,17 +180,17 @@
         base_layer {
             display-name = "BASE";
             bindings = <
-                &kp ESC        &kp Q          &kp W        &kp E        &kp R        &kp T
-                &kp Y          &kp U          &kp I        &kp O        &kp P        &kp BSPC
+                &kp ESC          &kp Q         &kp W        &kp E        &kp R        &kp T
+                &kp Y            &kp U         &kp I        &kp O        &kp P        &kp BSPC
 
-                &kp HYPER      &hm_s LSFT A   &hm LALT S   &hm LCTL D   &hm LGUI F   &kp G
-                &kp H          &hm RGUI J     &hm RCTL K   &hm RALT L   &hm_s RSFT _NTIL   &kp _ACUT
+                &kp HYPER        &hm_s LSFT A  &hm LALT S   &hm LCTL D   &hm LGUI F   &kp G
+                &kp H            &hm RGUI J    &hm RCTL K   &hm RALT L   &hm_s RSFT ES_N   &kp ES_ACU
 
-                &none          &kp Z          &kp X        &kp C        &kp V        &kp B
-                &kp N          &kp M          &kp _COMM    &kp _DOT     &kp SLASH    &kp RSFT
+                &none            &kp Z         &kp X        &kp C        &kp V        &kp B
+                &kp N            &kp M         &kp COMMA    &kp DOT      &kp FSLH     &kp RSFT
 
-                &tog BT        &mo NUM        &lt_nav NAV SPC
-                &kp SPC        &lt_sym SYM RET   &kp HYPER
+                &tog BT          &mo NUM       &lt_nav NAV SPC
+                &kp SPC          &lt_sym SYM RET   &kp HYPER
             >;
         };
 
@@ -172,7 +202,7 @@
                 &kp F1     &kp F2      &kp F3      &kp F4      &kp F5     &kp BSPC
 
                 &none      &none       &none       &none       &none      &none
-                &kp LEFT   &kp DOWN    &kp UP      &kp RIGHT   &none      &kp _DIAE
+                &kp LEFT   &kp DOWN    &kp UP      &kp RIGHT   &none      &kp ES_DIA
 
                 &none      &none       &kp DEL     &none       &none      &back_word
                 &kp HOME   &kp PG_DN   &kp PG_UP   &kp END     &none      &none
@@ -186,17 +216,17 @@
         num_layer {
             display-name = "NUM";
             bindings = <
-                &none      &none    &none    &none    &none    &none
-                &kp _ASTR  &kp _N7  &kp _N8  &kp _N9  &kp _MINS  &kp BSPC
+                &none       &none    &none    &none    &none    &none
+                &kp ES_AST  &kp N7   &kp N8   &kp N9   &kp ES_MNS  &kp BSPC
 
-                &none      &none    &none    &none    &none    &none
-                &kp _SLSH  &kp _N4  &kp _N5  &kp _N6  &kp _PLUS  &kp _SQT
+                &none       &none    &none    &none    &none    &none
+                &kp ES_SLS  &kp N4   &kp N5   &kp N6   &kp ES_PLU  &kp ES_APO
 
-                &none      &none    &none    &none    &none    &none
-                &kp _N0    &kp _N1  &kp _N2  &kp _N3  &kp _DOT   &kp RSFT
+                &none       &none    &none    &none    &none    &none
+                &kp N0      &kp N1   &kp N2   &kp N3   &kp DOT     &kp RSFT
 
-                &trans     &trans   &trans
-                &kp SPC    &trans   &trans
+                &trans      &trans   &trans
+                &kp SPC     &trans   &trans
             >;
         };
 
@@ -204,17 +234,17 @@
         sym_layer {
             display-name = "SYM";
             bindings = <
-                &kp _AMPR   &kp _EXLM  &kp _AT    &kp _HASH  &kp _DLR   &kp _PERC
-                &none       &kp _IEXL  &none      &none      &none      &kp BSPC
+                &kp ES_AMP  &kp ES_EXL  &kp ES_AT   &kp ES_HSH  &kp ES_DLR  &kp ES_PER
+                &none       &kp ES_IEX  &none       &none       &none       &kp BSPC
 
-                &kp _PIPE   &kp _LBRC  &kp _RBRC  &kp _LPAR  &kp _RPAR  &kp _EQUAL
-                &kp C_PP    &kp _DQT   &kp C_VOL_DN  &kp C_VOL_UP  &none  &none
+                &kp ES_PIP  &kp ES_LBR  &kp ES_RBR  &kp ES_LPR  &kp ES_RPR  &kp ES_EQL
+                &kp C_PP    &kp ES_QOT  &kp C_VOL_DN   &kp C_VOL_UP   &none  &none
 
-                &kp _BSLH   &kp _LBKT  &kp _RBKT  &kp _LT    &kp _GT    &kp _QMARK
-                &none       &kp _IQUE  &none      &none      &none      &none
+                &kp ES_BSL  &kp ES_LBK  &kp ES_RBK  &kp ES_LT   &kp ES_GT   &kp ES_QMK
+                &none       &kp ES_IQU  &none       &none       &none       &none
 
-                &trans      &trans     &trans
-                &kp SPC     &trans     &trans
+                &trans      &trans      &trans
+                &kp SPC     &trans      &trans
             >;
         };
 
