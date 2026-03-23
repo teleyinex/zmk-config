@@ -95,7 +95,7 @@
 #define ES_RPR  LS(N9)        /* ) */
 #define ES_EQL  LS(N0)        /* = */
 #define ES_AST  LS(RBKT)      /* * */
-#define ES_QMK  LS(FSLH)      /* ? */
+#define ES_QMK  LS(MINUS)     /* ? */
 
 / {
 
