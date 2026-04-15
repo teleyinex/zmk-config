@@ -54,11 +54,12 @@
 #include <dt-bindings/zmk/bt.h>
 
 /* ── Layer indices ─────────────────────────────────────────────────────────── */
-#define BASE  0
-#define NAV   1
-#define NUM   2
-#define SYM   3
-#define BT    4
+#define BASE     0
+#define NAV      1
+#define NUM      2
+#define SYM      3
+#define BT       4
+#define BASE_LNX 5
 
 /* ── Hyper ─────────────────────────────────────────────────────────────────── */
 #define HYPER LS(LA(LC(LGUI)))
@@ -118,6 +119,41 @@
                 , <&macro_tap     &kp RIGHT>
                 , <&macro_release &kp LALT>
                 ;
+        };
+
+        /* Switch to BT profile 0 (Mac) and activate Mac base layer */
+        bt0_mac: bt0_mac {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 0>, <&to BASE>;
+        };
+
+        /* Switch to BT profile 1 (Android) and activate Linux base layer */
+        bt1_lnx: bt1_lnx {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 1>, <&to BASE_LNX>;
+        };
+
+        /* Switch to BT profile 2 (Android) and activate Linux base layer */
+        bt2_lnx: bt2_lnx {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 2>, <&to BASE_LNX>;
+        };
+
+        /* Switch to BT profile 3 (Linux) and activate Linux base layer */
+        bt3_lnx: bt3_lnx {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 3>, <&to BASE_LNX>;
+        };
+
+        /* Switch to BT profile 4 (Linux) and activate Linux base layer */
+        bt4_lnx: bt4_lnx {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 4>, <&to BASE_LNX>;
         };
     };
 
@@ -267,14 +303,34 @@
                 &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &none  &none
 
-                &none          &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &bt BT_SEL 4
-                &none          &none          &none          &none          &none          &none
+                &none       &bt0_mac   &bt1_lnx   &bt2_lnx   &bt3_lnx   &bt4_lnx
+                &none       &none      &none      &none      &none      &none
 
                 &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &bt BT_CLR  &none
 
                 &trans  &trans  &trans
                 &trans  &trans  &trans
+            >;
+        };
+
+        /* ── 5: BASE_LNX ──────────────────────────────────────────────── */
+        /* Same as BASE but with CTRL↔GUI swapped on home row.            */
+        /* So the CMD position on Mac (F/J) sends CTRL on Linux/Android   */
+        base_lnx_layer {
+            display-name = "BASE LNX";
+            bindings = <
+                &kp ESC          &kp Q         &kp W        &kp E        &kp R        &kp T
+                &kp Y            &kp U         &kp I        &kp O        &kp P        &kp BSPC
+
+                &kp HYPER        &hm_s LSFT A  &hm LALT S   &hm LGUI D   &hm LCTL F   &kp G
+                &kp H            &hm RCTL J    &hm RGUI K   &hm RALT L   &hm_s RSFT ES_N   &kp ES_ACU
+
+                &none            &kp Z         &kp X        &kp C        &kp V        &kp B
+                &kp N            &kp M         &kp COMMA    &kp DOT      &kp FSLH     &kp RSFT
+
+                &mo BT           &mo NUM       &lt_nav NAV SPC
+                &kp SPC          &lt_sym SYM RET   &kp HYPER
             >;
         };
     };
