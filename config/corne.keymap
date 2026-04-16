@@ -58,8 +58,9 @@
 #define NAV      1
 #define NUM      2
 #define SYM      3
-#define BASE_LNX 4
-#define BT       5
+#define SYM_MAC  4
+#define BASE_LNX 5
+#define BT       6
 
 /* ── Hyper ─────────────────────────────────────────────────────────────────── */
 #define HYPER LS(LA(LC(LGUI)))
@@ -238,7 +239,7 @@
                 &kp N            &kp M         &kp COMMA    &kp DOT      &kp FSLH     &kp RSFT
 
                 &mo BT           &mo NUM       &lt_nav NAV SPC
-                &kp SPC          &lt_sym SYM RET   &kp HYPER
+                &kp SPC          &lt_sym SYM_MAC RET   &kp HYPER
             >;
         };
 
@@ -296,7 +297,28 @@
             >;
         };
 
-        /* ── 4: BASE_LNX ──────────────────────────────────────────────── */
+        /* ── 4: SYM_MAC ────────────────────────────────────────────────── */
+        /* Same as SYM but < > use GRAVE/LS(GRAVE).                       */
+        /* On macOS Spanish (ANSI), GRAVE (key left of 1) = < and > .    */
+        /* On Linux Spanish ISO, NON_US_BSLH (key left of Z) = < and > . */
+        sym_mac_layer {
+            display-name = "SYM MAC";
+            bindings = <
+                &kp ES_AMP  &kp ES_EXL  &kp ES_AT   &kp ES_HSH  &kp ES_DLR  &kp ES_PER
+                &none       &kp ES_IEX  &none       &none       &none       &kp BSPC
+
+                &kp ES_PIP  &kp ES_LBR  &kp ES_RBR  &kp ES_LPR  &kp ES_RPR  &kp ES_EQL
+                &kp C_PP    &kp ES_QOT  &kp C_VOL_DN   &kp C_VOL_UP   &none  &none
+
+                &kp ES_BSL  &kp ES_LBK  &kp ES_RBK  &kp GRAVE   &kp LS(GRAVE)  &kp ES_QMK
+                &none       &kp ES_IQU  &none       &none       &none       &none
+
+                &trans      &trans      &trans
+                &kp SPC     &trans      &trans
+            >;
+        };
+
+        /* ── 5: BASE_LNX ──────────────────────────────────────────────── */
         /* Same as BASE but with CTRL↔GUI swapped on home row.            */
         /* So the CMD position on Mac (F/J) sends CTRL on Linux/Android   */
         base_lnx_layer {
@@ -316,7 +338,7 @@
             >;
         };
 
-        /* ── 5: BT ─────────────────────────────────────────────────────── */
+        /* ── 6: BT ─────────────────────────────────────────────────────── */
         bt_layer {
             display-name = "BT";
             bindings = <
