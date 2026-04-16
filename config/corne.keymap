@@ -58,8 +58,8 @@
 #define NAV      1
 #define NUM      2
 #define SYM      3
-#define BT       4
-#define BASE_LNX 5
+#define BASE_LNX 4
+#define BT       5
 
 /* ── Hyper ─────────────────────────────────────────────────────────────────── */
 #define HYPER LS(LA(LC(LGUI)))
@@ -296,25 +296,7 @@
             >;
         };
 
-        /* ── 4: BT ─────────────────────────────────────────────────────── */
-        bt_layer {
-            display-name = "BT";
-            bindings = <
-                &none  &none  &none  &none  &none  &none
-                &none  &none  &none  &none  &none  &none
-
-                &none       &bt0_mac   &bt1_lnx   &bt2_lnx   &bt3_lnx   &bt4_lnx
-                &none       &none      &none      &none      &none      &none
-
-                &none  &none  &none  &none  &none  &none
-                &none  &none  &none  &none  &bt BT_CLR  &none
-
-                &trans  &trans  &trans
-                &trans  &trans  &trans
-            >;
-        };
-
-        /* ── 5: BASE_LNX ──────────────────────────────────────────────── */
+        /* ── 4: BASE_LNX ──────────────────────────────────────────────── */
         /* Same as BASE but with CTRL↔GUI swapped on home row.            */
         /* So the CMD position on Mac (F/J) sends CTRL on Linux/Android   */
         base_lnx_layer {
@@ -331,6 +313,24 @@
 
                 &mo BT           &mo NUM       &lt_nav NAV SPC
                 &kp SPC          &lt_sym SYM RET   &kp HYPER
+            >;
+        };
+
+        /* ── 5: BT ─────────────────────────────────────────────────────── */
+        bt_layer {
+            display-name = "BT";
+            bindings = <
+                &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none
+
+                &none       &bt0_mac   &bt1_lnx   &bt2_lnx   &bt3_lnx   &bt4_lnx
+                &none       &none      &none      &none      &none      &none
+
+                &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &bt BT_CLR  &none
+
+                &trans  &trans  &trans
+                &trans  &trans  &trans
             >;
         };
     };
