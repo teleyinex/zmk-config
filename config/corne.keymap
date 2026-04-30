@@ -54,12 +54,15 @@
 #include <dt-bindings/zmk/bt.h>
 
 /* ── Layer indices ─────────────────────────────────────────────────────────── */
+/* Base layers MUST have lower indices than all overlay layers.               */
+/* ZMK resolves keys highest-index-first, so any overlay layer (NAV, NUM,    */
+/* SYM…) must have a higher index than the base layer it sits on top of.     */
 #define BASE     0
-#define NAV      1
-#define NUM      2
-#define SYM      3
-#define SYM_MAC  4
-#define BASE_LNX 5
+#define BASE_LNX 1
+#define NAV      2
+#define NUM      3
+#define SYM      4
+#define SYM_MAC  5
 #define BT       6
 
 /* ── Hyper ─────────────────────────────────────────────────────────────────── */
@@ -243,7 +246,27 @@
             >;
         };
 
-        /* ── 1: NAV ────────────────────────────────────────────────────── */
+        /* ── 1: BASE_LNX ──────────────────────────────────────────────── */
+        /* Same as BASE but with CTRL↔GUI swapped on home row.            */
+        /* So the CMD position on Mac (F/J) sends CTRL on Linux/Android   */
+        base_lnx_layer {
+            display-name = "BASE LNX";
+            bindings = <
+                &kp ESC          &kp Q         &kp W        &kp E        &kp R        &kp T
+                &kp Y            &kp U         &kp I        &kp O        &kp P        &kp BSPC
+
+                &kp HYPER        &hm_s LSFT A  &hm LALT S   &hm LGUI D   &hm LCTL F   &kp G
+                &kp H            &hm RCTL J    &hm RGUI K   &hm RALT L   &hm_s RSFT ES_N   &kp ES_ACU
+
+                &none            &kp Z         &kp X        &kp C        &kp V        &kp B
+                &kp N            &kp M         &kp COMMA    &kp DOT      &kp FSLH     &kp RSFT
+
+                &mo BT           &mo NUM       &lt_nav NAV SPC
+                &kp SPC          &lt_sym SYM RET   &kp HYPER
+            >;
+        };
+
+        /* ── 2: NAV ────────────────────────────────────────────────────── */
         nav_layer {
             display-name = "NAV";
             bindings = <
@@ -261,7 +284,7 @@
             >;
         };
 
-        /* ── 2: NUM ────────────────────────────────────────────────────── */
+        /* ── 3: NUM ────────────────────────────────────────────────────── */
         num_layer {
             display-name = "NUM";
             bindings = <
@@ -279,7 +302,7 @@
             >;
         };
 
-        /* ── 3: SYM ────────────────────────────────────────────────────── */
+        /* ── 4: SYM ────────────────────────────────────────────────────── */
         sym_layer {
             display-name = "SYM";
             bindings = <
@@ -297,7 +320,7 @@
             >;
         };
 
-        /* ── 4: SYM_MAC ────────────────────────────────────────────────── */
+        /* ── 5: SYM_MAC ─────────────────────────────────────────────────── */
         /* Same as SYM but < > use GRAVE/LS(GRAVE).                       */
         /* On macOS Spanish (ANSI), GRAVE (key left of 1) = < and > .    */
         /* On Linux Spanish ISO, NON_US_BSLH (key left of Z) = < and > . */
@@ -315,26 +338,6 @@
 
                 &trans      &trans      &trans
                 &kp SPC     &trans      &trans
-            >;
-        };
-
-        /* ── 5: BASE_LNX ──────────────────────────────────────────────── */
-        /* Same as BASE but with CTRL↔GUI swapped on home row.            */
-        /* So the CMD position on Mac (F/J) sends CTRL on Linux/Android   */
-        base_lnx_layer {
-            display-name = "BASE LNX";
-            bindings = <
-                &kp ESC          &kp Q         &kp W        &kp E        &kp R        &kp T
-                &kp Y            &kp U         &kp I        &kp O        &kp P        &kp BSPC
-
-                &kp HYPER        &hm_s LSFT A  &hm LALT S   &hm LGUI D   &hm LCTL F   &kp G
-                &kp H            &hm RCTL J    &hm RGUI K   &hm RALT L   &hm_s RSFT ES_N   &kp ES_ACU
-
-                &none            &kp Z         &kp X        &kp C        &kp V        &kp B
-                &kp N            &kp M         &kp COMMA    &kp DOT      &kp FSLH     &kp RSFT
-
-                &mo BT           &mo NUM       &lt_nav NAV SPC
-                &kp SPC          &lt_sym SYM RET   &kp HYPER
             >;
         };
 
