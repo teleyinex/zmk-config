@@ -52,6 +52,8 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
+#include <behaviors/default_layer.dtsi>
+#include <dt-bindings/zmk_behavior_default_layer/default_layer.h>
 
 /* ── Layer indices ─────────────────────────────────────────────────────────── */
 /* Base layers MUST have lower indices than all overlay layers.               */
@@ -125,39 +127,41 @@
                 ;
         };
 
-        /* Switch to BT profile 0 (Mac) and activate Mac base layer */
+        /* Switch to BT profile 0 (Mac) and activate Mac base layer.
+         * &df DF_SEL also persists BASE as profile 0's remembered default,
+         * so it's reapplied automatically on every future reconnect/reboot. */
         bt0_mac: bt0_mac {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&bt BT_SEL 0>, <&to BASE>;
+            bindings = <&bt BT_SEL 0>, <&to BASE>, <&df DF_SEL BASE>;
         };
 
         /* Switch to BT profile 1 (Android) and activate Linux base layer */
         bt1_lnx: bt1_lnx {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&bt BT_SEL 1>, <&to BASE_LNX>;
+            bindings = <&bt BT_SEL 1>, <&to BASE_LNX>, <&df DF_SEL BASE_LNX>;
         };
 
         /* Switch to BT profile 2 (Android) and activate Linux base layer */
         bt2_lnx: bt2_lnx {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&bt BT_SEL 2>, <&to BASE_LNX>;
+            bindings = <&bt BT_SEL 2>, <&to BASE_LNX>, <&df DF_SEL BASE_LNX>;
         };
 
         /* Switch to BT profile 3 (Linux) and activate Linux base layer */
         bt3_lnx: bt3_lnx {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&bt BT_SEL 3>, <&to BASE_LNX>;
+            bindings = <&bt BT_SEL 3>, <&to BASE_LNX>, <&df DF_SEL BASE_LNX>;
         };
 
         /* Switch to BT profile 4 (Linux) and activate Linux base layer */
         bt4_lnx: bt4_lnx {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&bt BT_SEL 4>, <&to BASE_LNX>;
+            bindings = <&bt BT_SEL 4>, <&to BASE_LNX>, <&df DF_SEL BASE_LNX>;
         };
     };
 

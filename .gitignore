@@ -1,2 +1,6 @@
 
 .zmk/
+.claude
+.local
+.bash_history
+.claude.json
