@@ -11,6 +11,6 @@ manifest:
       import: app/west.yml
     - name: zmk-feature-default-layer
       remote: cormoran
-      revision: 92728246f80d327709839b2dbf5cf11880ff87e1
+      revision: 9543cc4a3afdf0400ed477a93e6f79b1fb4927e3 # last commit compatible with zmk v0.3 (before "Migrate to zmk v0.4")
   self:
     path: config
